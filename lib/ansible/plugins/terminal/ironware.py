@@ -46,8 +46,11 @@ class TerminalModule(TerminalBase):
         try:
             self._exec_cli_command(u'terminal length 0')
         except AnsibleConnectionFailure:
-            raise AnsibleConnectionFailure('unable to disable terminal pager')
-
+            try:
+                self._exec_cli_command(u'skip-page-display')
+            except AnsibleConnectionFailure:
+                raise AnsibleConnectionFailure('unable to disable terminal pager')
+                
     def on_become(self, passwd=None):
         if self._get_prompt().strip().endswith(b'#'):
             return
